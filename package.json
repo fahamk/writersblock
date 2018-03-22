@@ -6,18 +6,17 @@
 		"start": "node app.js"
 	},
 	"dependencies": {
-		"express": "4.15.x",
+		"express": "^3.5.0",
 		"cfenv": "1.0.x",
 		"bcryptjs": "^0.7.12",
-    "express": "^3.5.0",
-    "express-handlebars": "^3.0.0",
-    "mongodb": "^2.2.11",
-    "passport": "^0.2.0",
-    "passport-facebook": "^1.0.3",
-    "passport-google": "^0.3.0",
-    "passport-local": "^1.0.0",
-    "passport-twitter": "^1.0.2",
-    "q": "^1.0.1"
+		"express-handlebars": "^3.0.0",
+		"mongodb": "^2.2.11",
+		"passport": "^0.2.0",
+		"passport-facebook": "^1.0.3",
+		"passport-google": "^0.3.0",
+		"passport-local": "^1.0.0",
+		"passport-twitter": "^1.0.2",
+		"q": "^1.0.1"
 	},
 	"repository": {},
 	"engines": {
