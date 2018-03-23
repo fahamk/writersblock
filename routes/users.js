@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-
+var crypto = require('crypto');
 var User = require('../models/user');
 
 // Register
@@ -22,9 +22,8 @@ router.post('/register', function(req, res){
 	console.log(name)
 	var email = req.body.email;
 	var username = req.body.username;
-	var password = req.body.password;
-	var password2 = req.body.password2;
-
+	var upassword = req.body.password;
+	var upassword2 = req.body.password2;
 	var Cloudant = require('@cloudant/cloudant');
 	var me = '1f4f3453-d758-4393-a422-2010efd3d530-bluemix'; // Set this to your own account
 	var password = '28a1e839547250fe22c3e85e46c9f6200a26428ccd6fa95ade3778162b939779';
@@ -33,15 +32,39 @@ router.post('/register', function(req, res){
 	  console.log('All my databases: %s', allDbs.join(', '))
 	});
 
-	var obj = new Object();
-   obj.name = name;
-   obj.email  = email;
-   obj.username = username;
-	 obj.password = password;
-   var jsonString= JSON.stringify(obj);
-	 console.log(obj)
+
+	var hash = crypto.createHash('md5').update(upassword).digest('hex');
+	console.log(hash); // 9b74c9897bac770ffc029102a200c5de
+
+	 var user = {
+  	"name": name,
+  	"email": email,
+		"username": username,
+		"password": upassword,
+		"book_ids" : "",
+		"rating": 0,
+		"book_count" : 0
+	  }
+   var jsonString= JSON.stringify(user);
+	 console.log(jsonString)
+
+	 Cloudant({account:me, password:password}, function(er, cloudant) {
+	   if (er)
+	     return console.log('Error connecting to Cloudant account %s: %s', me, er.message)
+
+	         // specify the database we are going to use
+	       var users = cloudant.db.use('users')
+	       // and insert a document in it
+	       users.insert(user, function(err, body, header) {
+	         if (err)
+	           return console.log('[users.insert] ', err.message)
+
+	         console.log('you have inserted the user info.')
+	         console.log(body)
+	       })
 
 
+	 })
 
 
 });
