@@ -86,6 +86,17 @@
             <div class="header-content-inner">
                 <h1 id="homeHeading">WritersBlock</h1>
                 <hr>
+                {{#if success_msg}}
+    	            <div class="alert alert-success">{{success_msg}}</div>
+    	          {{/if}}
+
+    	          {{#if error_msg}}
+    	            <div class="alert alert-danger">{{error_msg}}</div>
+    	          {{/if}}
+
+    	          {{#if error}}
+    	            <div class="alert alert-danger">{{error}}</div>
+    	          {{/if}}
                 <span class="headerwords"> <p>Join other users in reading and discovering your favorite books!</p></span>
 
                 <button class="authbutton" onclick="window.open('#')"> <span> Login </span> </button>

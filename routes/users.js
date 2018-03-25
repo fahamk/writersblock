@@ -26,17 +26,14 @@ router.post('/register', function(req, res){
 	var upassword2 = req.body.password2;
 	var Cloudant = require('@cloudant/cloudant');
 	var me = '1f4f3453-d758-4393-a422-2010efd3d530-bluemix'; // Set this to your own account
-	var password = '28a1e839547250fe22c3e85e46c9f6200a26428ccd6fa95ade3778162b939779';
-	var cloudant = Cloudant({account:me, password:password});
+	var cpassword = '28a1e839547250fe22c3e85e46c9f6200a26428ccd6fa95ade3778162b939779';
+	var cloudant = Cloudant({account:me, password:cpassword});
 	cloudant.db.list(function(err, allDbs) {
 	  console.log('All my databases: %s', allDbs.join(', '))
 	});
 
 
-	var hash = crypto.createHash('md5').update(upassword).digest('hex');
-	console.log(hash); // 9b74c9897bac770ffc029102a200c5de
-
-	 var user = {
+	 var newUser = {
   	"name": name,
   	"email": email,
 		"username": username,
@@ -45,29 +42,21 @@ router.post('/register', function(req, res){
 		"rating": 0,
 		"book_count" : 0
 	  }
-   var jsonString= JSON.stringify(user);
-	 console.log(jsonString)
+		console.log("Now creating the user")
 
-	 Cloudant({account:me, password:password}, function(er, cloudant) {
-	   if (er)
-	     return console.log('Error connecting to Cloudant account %s: %s', me, er.message)
-
-	         // specify the database we are going to use
-	       var users = cloudant.db.use('users')
-	       // and insert a document in it
-	       users.insert(user, function(err, body, header) {
-	         if (err)
-	           return console.log('[users.insert] ', err.message)
-
-	         console.log('you have inserted the user info.')
-	         console.log(body)
-	       })
-
-
+	 User.createUser(newUser, function(err, user){
+		 if(err) throw err;
+		 console.log("ESKITTIT"+newUser);
 	 })
 
-
+	 req.flash('success_msg', 'You are registered and can now login');
+	 res.redirect('/users/login')
 });
+
+//User.getUserByUsername("asd", function(err, user){
+//	if(err) throw err
+//	console.log("And the user is: "+JSON.stringify(user))
+//})
 
 passport.use(new LocalStrategy(
   function(username, password, done) {
@@ -80,6 +69,7 @@ passport.use(new LocalStrategy(
    	User.comparePassword(password, user.password, function(err, isMatch){
    		if(err) throw err;
    		if(isMatch){
+				console.log("It is a match and the user id is id"+user._id)
    			return done(null, user);
    		} else {
    			return done(null, false, {message: 'Invalid password'});
@@ -89,11 +79,13 @@ passport.use(new LocalStrategy(
   }));
 
 passport.serializeUser(function(user, done) {
-  done(null, user.id);
+	console.log("And now onto serializeUser we have id of: "+user._id)
+  done(null, user._id);
 });
 
 passport.deserializeUser(function(id, done) {
   User.getUserById(id, function(err, user) {
+		console.log("Getting user by id: "+user)
     done(err, user);
   });
 });
@@ -111,5 +103,6 @@ router.get('/logout', function(req, res){
 
 	res.redirect('/users/login');
 });
+
 
 module.exports = router;
