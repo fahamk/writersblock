@@ -666,6 +666,11 @@ button:hover {
   width: 100%;
 }
 
+.ratingInfo{
+  
+  padding-left: 50%
+}
+
 /* Add padding to container elements */
 .container {
     padding: 16px;

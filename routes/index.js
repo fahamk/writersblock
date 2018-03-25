@@ -4,8 +4,10 @@ var router = express.Router();
 // Get Homepage
 router.get('/', ensureAuthenticated, function(req, res){
 	console.log("The username here is "+req.user)
-	req.flash(req.user);
-	res.render('index');
+
+	res.render('index',
+  { userID : req.user }
+  )
 });
 
 function ensureAuthenticated(req, res, next){
@@ -18,5 +20,10 @@ function ensureAuthenticated(req, res, next){
 		res.redirect('/users/login');
 	}
 }
+
+router.get('/profile', ensureAuthenticated, function(req, res){
+
+	res.render('profile')
+});
 
 module.exports = router;
