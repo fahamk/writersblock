@@ -651,11 +651,24 @@ button:hover {
 .signupbtn {
   background-color: #222222;
 }
+.signupbtn2 {
+  background-color: #222222;
+}
 
 /* Float cancel and signup buttons and add an equal width */
 .cancelbtn, .signupbtn {
   float: left;
   width: 50%;
+}
+
+.signupbtn2{
+  float: left;
+  width: 100%;
+}
+
+.ratingInfo{
+  
+  padding-left: 50%
 }
 
 /* Add padding to container elements */

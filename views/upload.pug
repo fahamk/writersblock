@@ -1,0 +1,5 @@
+html
+  body
+    form#uploadForm(ref='uploadForm', action='/upload', method='post', enctype='multipart/form-data')
+      input(type='file', name='userfile', accept='application/pdf')
+      input(type='submit', value='Upload!')
