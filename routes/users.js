@@ -7,12 +7,26 @@ var User = require('../models/user');
 
 // Register
 router.get('/register', function(req, res){
-	res.render('register');
+	if(req.isAuthenticated()){
+		//Get username info
+		res.redirect('/index')
+	}
+	else{
+		res.render('register')
+	}
+
 });
 
 // Login
 router.get('/login', function(req, res){
-	res.render('login');
+	if(req.isAuthenticated()){
+		//Get username info
+		res.redirect('/index')
+	}
+	else{
+		res.render('login')
+	}
+
 });
 
 // Register User

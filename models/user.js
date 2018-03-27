@@ -77,3 +77,19 @@ module.exports.comparePassword = function(candidatePassword, hash, callback){
     	callback(null, isMatch);
 	});
 }
+
+
+module.exports.getUserInfoById = function(id, callback){
+
+  searchuser.get(id, { revs_info: true }, function(err, data) {
+    if(err){
+      callback(null,false)
+    }
+    else{
+      console.log("We successfully searched and here is the id: "+data._id);
+      console.log(`Document contents:` + JSON.stringify(data));
+      callback(null, data)
+    }
+  });
+
+}
