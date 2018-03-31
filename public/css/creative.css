@@ -317,9 +317,10 @@ header .header-content .header-content-inner p:hover {
   color: #FFFFFF;
   text-align: center;
   font-size: 20px;
+
   padding-right: 20px;
   padding-left: 20px;
-  height: 50px;
+  height: 60px;
   width: 200px;
   transition: all 0.5s;
   cursor: pointer;
@@ -931,6 +932,11 @@ button:hover {
 .card.hovercard .bottom {
     padding: 0 20px;
     margin-bottom: 17px;
+}
+
+iframe{
+    width: 95%;
+    height: 1000px;
 }
 
 .btn2{ border-radius: 50%; width:32px; height:32px; line-height:18px;  }

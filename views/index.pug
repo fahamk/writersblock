@@ -38,14 +38,13 @@ html(lang='en')
             |  Menu
             i.fa.fa-bars
           a.navbar-brand.page-scroll(href='#page-top')
-            img.ibm-logo(src='#', alt='')
             | WritersBlock
         // Collect the nav links, forms, and other content for toggling
         #bs-example-navbar-collapse-1.collapse.navbar-collapse
           if userID == false
             ul.nav.navbar-nav.navbar-right
               li
-                a.page-scroll(href='#') Browse
+                a.page-scroll(href='/browse') Browse
               li
                 a.page-scroll(href='#') About
               li
@@ -57,7 +56,7 @@ html(lang='en')
           else
             ul.nav.navbar-nav.navbar-right
               li
-                a.page-scroll(href='#') Browse
+                a.page-scroll(href='/browse') Browse
               li
                 a.page-scroll(href='#') About
               li
@@ -76,16 +75,16 @@ html(lang='en')
           span.headerwords
             p Join other users in reading and discovering your favorite books!
           if userID == false
-            button.authbutton(onclick="window.open('/users/login')")
+            button.authbutton(onclick="window.location('/users/login')")
               span  Login
-            button.authbutton(onclick="window.open('/users/register')")
+            button.authbutton(onclick="window.location('/users/register')")
               span  Sign Up
           else
             p Welcome #{userID}
           
           div
-            button.authbutton(onclick="window.open('#')")
-              span  Browse
+            button.authbutton(onclick="window.location('/browse')")
+              span Browse
     section#about.bg-primary
       .container
         .row

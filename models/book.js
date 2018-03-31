@@ -68,5 +68,27 @@ module.exports.getBookInfoById = function(id, callback){
       callback(null, data)
     }
   });
+}
 
+module.exports.getBooks = function(id, callback){
+  searchBook.list({include_docs:true},function (err, data) {
+    if(err){
+      callback(null,false)
+    }
+    //console.log(err, data.rows);
+    else{
+
+      var booksArray =[];
+
+      for(i in data.rows){
+        var title = data.rows[i].doc.title
+        var book = {id:data.rows[i].id, title:title.substring(0, (title.length-4)), rating:data.rows[i].doc.rating, views:data.rows[i].doc.views, genre:data.rows[i].doc.genre, authorID:data.rows[i].doc.authorID, description:data.rows[i].doc.description, authorUsername:data.rows[i].doc.authorUsername };
+        var test = {authorUsername:data.rows[i].doc.authorUsername}
+        booksArray.push(book)
+      }
+      console.log(booksArray);
+      console.log("----------------------------------------------------------------------------------------")
+      callback(null, booksArray)
+  }
+  });
 }

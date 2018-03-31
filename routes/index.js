@@ -45,16 +45,21 @@ router.get('/', function(req, res){
 
 });
 
-router.get('/book', function(req, res){
-  var tempFile="public/pdfs/cd5d8e90-3177-11e8-8e98-abb500826299.pdf";
+router.get('/book/:bookID', function(req, res){
+	console.log("Book is set to " + req.params.bookID);
+
+  var tempFile="public/pdfs/"+req.params.bookID+".pdf";
   fs.readFile(tempFile, function (err,data){
      res.contentType("application/pdf");
      res.send(data);
   });
 });
 
-router.get('/read', function(req, res){
-	res.render('read')
+router.get('/read/:bookID', function(req, res){
+	var tempFile="public/pdfs/"+req.params.bookID+".pdf";
+	res.render('read',
+	{ bookID : req.params.bookID }
+	)
 
 });
 
@@ -75,10 +80,23 @@ router.get('/profile', ensureAuthenticated, function(req, res){
 	res.render('profile')
 });
 
-router.get('/browse', ensureAuthenticated, function(req, res){
-
-	res.render('browse')
+router.get('/browse', function(req, res){
+  Book.getBooks(null, function(err, books){
+		 if(err){
+       res.send(err)
+     }
+     if(req.isAuthenticated()){
+       console.log("We are authenticated")
+       console.log("Authers username is "+ books[0].authorUsername)
+       res.render('browse',{ bookArray : books, userID: true })
+     }
+     else{
+       res.render('browse',{ bookArray : books, userID: false })
+     }
+	 })
+  //res.render('browse')
 });
+
 
 
 router.get('/upload', ensureAuthenticated, function(req, res){
@@ -87,58 +105,76 @@ router.get('/upload', ensureAuthenticated, function(req, res){
 
 
 router.post('/upload',ensureAuthenticated, function(req, res) {
-  if (!req.files)
-    return res.status(400).send('No files were uploaded.');
+  if (!req.files.chooseFile){
 
-  // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-  let sampleFile = req.files.chooseFile;
+    res.render('upload',
+    { fileNotUploaded : true }
+    )
+  }
+  else{
+    var genre=req.body.genre
+    if(genre == "Pick a Genre"){
+        res.render('upload',
+        { notUploaded : true }
+        )
 
-	var id = uuidv1();
-	var newBook = {
-	 "_id": id,
-	 "title": req.files.chooseFile.name,
-	 "genre": "",
-	 "description": "",
-	 "views": 0,
-	 "rating": 0,
-	 "authorID": req.user
-	 }
+    }
+    else{
+      // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+      let sampleFile = req.files.chooseFile;
+      User.getUserInfoById(req.user, function(err, user) {
+        console.log("Getting user by id: "+user.username)
+        var username = user.username
+        var id = uuidv1();
+      	var newBook = {
+      	 "_id": id,
+      	 "title": req.files.chooseFile.name,
+      	 "genre": req.body.genre,
+      	 "description": "",
+      	 "views": 0,
+      	 "rating": 0,
+      	 "authorID": req.user,
+         "authorUsername": username
+      	 }
 
-	Book.createBook(newBook, function(err, book){
-		 if(err) throw err;
-		 console.log("ESKITTIT"+book);
-	 })
+      	Book.createBook(newBook, function(err, book){
+      		 if(err) throw err;
+      		 console.log("ESKITTIT"+book);
+      	 })
 
-	//var test= fs.createReadStream('public/pdfs/Portfolio-Culminating Assignment Part 2.pdf')
-	//uploadFile(req.files.userfile);
-	console.log()
-	User.getUserInfoById(req.user, function(err, user){
-		if(err) throw err;
-		console.log("User is:"+JSON.stringify(user))
-		if(user.book_ids == ""){
-			user.book_ids = id
-		}
-		else{
-			user.book_ids = user.book_ids +","+id
-		}
-		console.log("Updated user is:"+JSON.stringify(user))
-		User.updateUser(user, function(err, updatedUser){
-			if(err) throw err;
-			console.log("User is:"+JSON.stringify(updatedUser))
-			user.book_ids = updatedUser.book_ids +","+id
-			console.log("Updated user is:"+JSON.stringify(updatedUser))
-		})
-	})
+      	//var test= fs.createReadStream('public/pdfs/Portfolio-Culminating Assignment Part 2.pdf')
+      	//uploadFile(req.files.userfile);
+      	console.log()
+      	User.getUserInfoById(req.user, function(err, user){
+      		if(err) throw err;
+      		console.log("User is:"+JSON.stringify(user))
+      		if(user.book_ids == ""){
+      			user.book_ids = id
+      		}
+      		else{
+      			user.book_ids = user.book_ids +","+id
+      		}
+      		console.log("Updated user is:"+JSON.stringify(user))
+      		User.updateUser(user, function(err, updatedUser){
+      			if(err) throw err;
+      			console.log("User is:"+JSON.stringify(updatedUser))
+      			user.book_ids = updatedUser.book_ids +","+id
+      			console.log("Updated user is:"+JSON.stringify(updatedUser))
+      		})
+      	})
 
 
 
-  // Use the mv() method to place the file somewhere on your server
-	  sampleFile.mv('public/pdfs/'+id+'.pdf', function(err) {
-    if (err)
-      return res.status(500).send(err);
+        // Use the mv() method to place the file somewhere on your server
+      	  sampleFile.mv('public/pdfs/'+id+'.pdf', function(err) {
+          if (err)
+            return res.status(500).send(err);
 
-    res.send('File uploaded!');
-  });
+          res.send('File uploaded!');
+        });
+      });
+    }
+  }
 });
 
 function uploadFile(info){

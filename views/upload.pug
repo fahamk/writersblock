@@ -40,67 +40,77 @@ html(lang='en')
             |  Menu
             i.fa.fa-bars
           a.navbar-brand.page-scroll(href='/')
-            img.ibm-logo(src='#', alt='')
             | WritersBlock
         // Collect the nav links, forms, and other content for toggling
         #bs-example-navbar-collapse-1.collapse.navbar-collapse
           ul.nav.navbar-nav.navbar-right
             li
-              a.page-scroll(href='#') Browse
+              a.page-scroll(href='/browse') Browse
             li
               a.page-scroll(href='#') About
             li
               a.page-scroll(href='#contact') Contact
             li
-              a.page-scroll(href='/users/login') Login
+              a.page-scroll(href='/profile') Account
             li
-              a.page-scroll(href='/users/register') Sign Up
+              a.page-scroll(href='/users/logout') Logout
         // /.navbar-collapse
       // /.container-fluid
     
     section#signUp.bg-primary
-      h1 Choose a File
-      hr
-      form#uploadForm(ref='uploadForm', action='/upload', method='post', enctype='multipart/form-data')
-        .file-upload
-          .file-select
-            #fileName.file-select-button Choose File Or Drag n' Drop
-            #noFile.file-select-name No file chosen...
-            input#chooseFile(type='file', name='chooseFile', accept='application/pdf')
-        select.selectpicker(style='padding-bottom:5%')
-          option Science fiction
-          option Satire
-          option Drama
-          option Action and Adventure
-          option Romance
-          option Mystery
-          option Horror
-          option Self help
-          option Health
-          option Guide
-          option Travel
-          option Children's
-          option Religion, Spirituality & New Age
-          option Science
-          option History
-          option Math
-          option Anthology
-          option Poetry
-          option Encyclopedias
-          option Dictionaries
-          option Comics
-          option Art
-          option Cookbooks
-          option Diaries
-          option Journals
-          option Prayer books
-          option Series
-          option Trilogy
-          option Biographies
-          option Autobiographies
-          option Fantasy
-        br
-        input.btn.btn-default.btn-xl.sr-button(type='submit', value='Upload')
+      center
+        if fileNotUploaded == true
+          .alert.alert-danger
+            strong File Not Uploaded!
+            |  Please Select a file
+        if notUploaded == true
+          .alert.alert-danger
+            strong File Not Uploaded!
+            |  Please Choose a Genre
+        h1 Choose a File
+        hr
+        form#uploadForm(ref='uploadForm', action='/upload', method='post', enctype='multipart/form-data')
+          .file-upload
+            .file-select
+              #fileName.file-select-button Choose File Or Drag n' Drop
+              #noFile.file-select-name No file chosen...
+              input#chooseFile(type='file', name='chooseFile', accept='application/pdf')
+          select#genre.selectpicker(style='padding-bottom:5%' name="genre")
+            option Pick a Genre
+            option Science fiction
+            option Satire
+            option Drama
+            option Action and Adventure
+            option Romance
+            option Mystery
+            option Horror
+            option Self help
+            option Health
+            option Guide
+            option Travel
+            option Children's
+            option Religion, Spirituality & New Age
+            option Science
+            option History
+            option Math
+            option Anthology
+            option Poetry
+            option Encyclopedias
+            option Dictionaries
+            option Comics
+            option Art
+            option Cookbooks
+            option Diaries
+            option Journals
+            option Prayer books
+            option Series
+            option Trilogy
+            option Biographies
+            option Autobiographies
+            option Fantasy
+          br
+          br
+          input.btn.btn-default.btn-xl.sr-button(type='submit', value='Upload')
 
     //form#my-awesome-dropzone.dropzone(action='/upload')
     aside.bg-dark

@@ -39,21 +39,33 @@ html(lang='en')
             |  Menu
             i.fa.fa-bars
           a.navbar-brand.page-scroll(href='/')
-            img.ibm-logo(src='#', alt='')
             | WritersBlock
         // Collect the nav links, forms, and other content for toggling
         #bs-example-navbar-collapse-1.collapse.navbar-collapse
-          ul.nav.navbar-nav.navbar-right
-            li
-              a.page-scroll(href='#') Browse
-            li
-              a.page-scroll(href='#') About
-            li
-              a.page-scroll(href='#contact') Contact
-            li
-              a.page-scroll(href='/users/login') Login
-            li
-              a.page-scroll(href='/users/register') Sign Up
+          if userID == false
+            ul.nav.navbar-nav.navbar-right
+              li
+                a.page-scroll(href='/browse') Browse
+              li
+                a.page-scroll(href='#') About
+              li
+                a.page-scroll(href='#contact') Contact
+              li
+                a.page-scroll(href='/users/login') Login
+              li
+                a.page-scroll(href='/users/register') Sign Up
+          else
+            ul.nav.navbar-nav.navbar-right
+              li
+                a.page-scroll(href='/browse') Browse
+              li
+                a.page-scroll(href='#') About
+              li
+                a.page-scroll(href='#contact') Contact
+              li
+                a.page-scroll(href='/profile') Account
+              li
+                a.page-scroll(href='/users/logout') Logout
         // /.navbar-collapse
       // /.container-fluid
     section#signUp.bg-primary-books
@@ -62,13 +74,13 @@ html(lang='en')
           center
             h1(style="color:white") Browse Books
     center
-      h1 Hundreds of Authors All At Your Finger Tip
+      h1 Hundreds of Authors All At Your Finger Tips
     section#contact  
       .container
         .row
-          - for(var i = 0; i < 6; i++) {
+          each book in bookArray
             .col-lg-3.col-sm-6
-              .card.hovercard
+              .card.hovercard(style="overflow: scroll; height:350px;")
                 .cardheader(style="background: url(\"http://lorempixel.com/850/280/nature/4/\")")
                 .avatar
                   // img(alt='', src='/public/images/newapp-icon.png')
@@ -77,16 +89,16 @@ html(lang='en')
                   br
                 .info
                   .title
-                    a(target='_blank', href='#') Book Name
-                  .desc Author
-                  .desc Genre
-                  .desc Rating
+                    a(href='/read/'+book.id) #{book.title}
+                  .desc #{book.authorUsername}
+                  .desc Genre: #{book.genre}
+                  .desc Rating: #{book.rating}/5
                 .bottom
                   a.btn.btn-primary.btn-twitter.btn-sm(href='#')
-                    i.fa.fa-address-book
+                    i.fa.fa-address-book 
                   a.btn.btn-danger.btn-sm(rel='publisher', href='#')
-                    i.fa.fa-eye
-          - }
+                    i.fa.fa-eye  #{book.views}
+          
     aside.bg-dark
       .container.text-center
         .call-to-action
