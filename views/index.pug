@@ -76,9 +76,9 @@ html(lang='en')
           span.headerwords
             p Join other users in reading and discovering your favorite books!
           if userID == false
-            button.authbutton(onclick="window.open('#')")
+            button.authbutton(onclick="window.open('/users/login')")
               span  Login
-            button.authbutton(onclick="window.open('#')")
+            button.authbutton(onclick="window.open('/users/register')")
               span  Sign Up
           else
             p Welcome #{userID}

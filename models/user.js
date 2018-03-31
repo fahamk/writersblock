@@ -17,22 +17,35 @@ module.exports.createUser = function(newUser, callback){
   Cloudant({account:me, password:password}, function(er, cloudant) {
     if (er)
       return console.log('Error connecting to Cloudant account %s: %s', me, er.message)
-
           // specify the database we are going to use
         var users = cloudant.db.use('users')
         // and insert a document in it
         users.insert(newUser, function(err, body, header) {
           if (err)
             return console.log('[users.insert] ', err.message)
-
           console.log('you have inserted the user info.')
           console.log(body)
-
         })
   })
-
-
 }
+
+
+module.exports.updateUser = function(newUser, callback){
+  Cloudant({account:me, password:password}, function(er, cloudant) {
+    if (er)
+      return console.log('Error connecting to Cloudant account %s: %s', me, er.message)
+          // specify the database we are going to use
+        var users = cloudant.db.use('users')
+        // and insert a document in it
+        users.insert(newUser, function(err, body, header) {
+          if (err)
+            return console.log('[users.insert] ', err.message)
+          console.log('you have inserted the user info.')
+          console.log(body)
+        })
+  })
+}
+
 
 module.exports.getUserByUsername = function(username, callback){
   searchuser.search('user', 'newSearch', {q:'username:'+username}, function(er, result) {
@@ -67,7 +80,6 @@ module.exports.getUserById = function(id, callback){
       callback(null, data._id)
     }
   });
-
 }
 
 module.exports.comparePassword = function(candidatePassword, hash, callback){
@@ -80,7 +92,6 @@ module.exports.comparePassword = function(candidatePassword, hash, callback){
 
 
 module.exports.getUserInfoById = function(id, callback){
-
   searchuser.get(id, { revs_info: true }, function(err, data) {
     if(err){
       callback(null,false)
@@ -91,5 +102,33 @@ module.exports.getUserInfoById = function(id, callback){
       callback(null, data)
     }
   });
+}
 
+module.exports.updateUserInfo = function(user, callback){
+  searchuser.get(user._id, { revs_info: true }, function(err, data) {
+    if(err){
+      callback(null,false)
+    }
+    else{
+      console.log("We successfully searched and here is the id: "+data._id);
+      console.log(`Document contents:` + JSON.stringify(data));
+
+      Cloudant({account:me, password:password}, function(er, cloudant) {
+        if (er)
+          return console.log('Error connecting to Cloudant account %s: %s', me, er.message)
+
+              // specify the database we are going to use
+            var users = cloudant.db.use('users')
+            // and insert a document in it
+            users.insert(newUser, function(err, body, header) {
+              if (err)
+                return console.log('[users.insert] ', err.message)
+
+              console.log('you have inserted the user info.')
+              console.log(body)
+            })
+      })
+      callback(null, data)
+    }
+  });
 }

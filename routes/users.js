@@ -4,6 +4,8 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var crypto = require('crypto');
 var User = require('../models/user');
+const uuidv1 = require('uuid/v1');
+
 
 // Register
 router.get('/register', function(req, res){

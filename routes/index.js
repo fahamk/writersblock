@@ -1,10 +1,13 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
+var Book = require('../models/book');
 const fileUpload = require('express-fileupload');
 var AWS = require('ibm-cos-sdk');
 var util = require('util');
 var fs = require('fs')
+const uuidv1 = require('uuid/v1');
+const {google} = require('googleapis');
 
 var config = {
     endpoint: 's3-api.dal-us-geo.objectstorage.softlayer.net',
@@ -21,6 +24,8 @@ router.get('/', function(req, res){
 	console.log("The username here is "+req.user)
   var isLoggedIn = false
 	var menuBar;
+	console.log("Doing google drive")
+	//googleDrive();
 	if(req.isAuthenticated()){
 		//Get username info
 		User.getUserInfoById(req.user, function(err, user) {
@@ -40,6 +45,20 @@ router.get('/', function(req, res){
 
 });
 
+router.get('/book', function(req, res){
+  var tempFile="public/pdfs/cd5d8e90-3177-11e8-8e98-abb500826299.pdf";
+  fs.readFile(tempFile, function (err,data){
+     res.contentType("application/pdf");
+     res.send(data);
+  });
+});
+
+router.get('/read', function(req, res){
+	res.render('read')
+
+});
+
+
 function ensureAuthenticated(req, res, next){
 	if(req.isAuthenticated()){
 
@@ -56,24 +75,65 @@ router.get('/profile', ensureAuthenticated, function(req, res){
 	res.render('profile')
 });
 
-router.get('/upload', function(req, res){
+router.get('/browse', ensureAuthenticated, function(req, res){
 
+	res.render('browse')
+});
+
+
+router.get('/upload', ensureAuthenticated, function(req, res){
 	res.render('upload')
 });
 
 
-router.post('/upload', function(req, res) {
+router.post('/upload',ensureAuthenticated, function(req, res) {
   if (!req.files)
     return res.status(400).send('No files were uploaded.');
 
   // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-  let sampleFile = req.files.userfile;
+  let sampleFile = req.files.chooseFile;
+
+	var id = uuidv1();
+	var newBook = {
+	 "_id": id,
+	 "title": req.files.chooseFile.name,
+	 "genre": "",
+	 "description": "",
+	 "views": 0,
+	 "rating": 0,
+	 "authorID": req.user
+	 }
+
+	Book.createBook(newBook, function(err, book){
+		 if(err) throw err;
+		 console.log("ESKITTIT"+book);
+	 })
+
 	//var test= fs.createReadStream('public/pdfs/Portfolio-Culminating Assignment Part 2.pdf')
 	//uploadFile(req.files.userfile);
 	console.log()
+	User.getUserInfoById(req.user, function(err, user){
+		if(err) throw err;
+		console.log("User is:"+JSON.stringify(user))
+		if(user.book_ids == ""){
+			user.book_ids = id
+		}
+		else{
+			user.book_ids = user.book_ids +","+id
+		}
+		console.log("Updated user is:"+JSON.stringify(user))
+		User.updateUser(user, function(err, updatedUser){
+			if(err) throw err;
+			console.log("User is:"+JSON.stringify(updatedUser))
+			user.book_ids = updatedUser.book_ids +","+id
+			console.log("Updated user is:"+JSON.stringify(updatedUser))
+		})
+	})
+
+
 
   // Use the mv() method to place the file somewhere on your server
-	  sampleFile.mv('public/pdfs/'+req.files.userfile.name, function(err) {
+	  sampleFile.mv('public/pdfs/'+id+'.pdf', function(err) {
     if (err)
       return res.status(500).send(err);
 
@@ -91,5 +151,30 @@ function uploadFile(info){
 	}).promise();
 }
 
+function googleDrive(){
+	var drive = google.drive('v3');
+  var fileMetadata = {
+         'name': 'uploadImageTest.jpeg'
+      };
+  var media = {
+          mimeType: 'image/png',
+          //PATH OF THE FILE FROM YOUR COMPUTER
+          body: fs.createReadStream('public/images/newapp-icon.png')
+      };
+
+      drive.files.create({
+          auth: auth,
+          resource: fileMetadata,
+          media: media,
+          fields: 'id'
+      }, function (err, file) {
+      if (err) {
+          // Handle error
+          console.error(err);
+      } else {
+          console.log('File Id: ', file.id);
+      }
+   });
+}
 
 module.exports = router;
