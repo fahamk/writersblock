@@ -12,6 +12,8 @@ var mongo = require('mongodb');
 var mongoose = require('mongoose');
 const fileUpload = require('express-fileupload');
 var cfenv = require('cfenv');
+var firebase = require("firebase");
+
 //////////////////////////////////////////////////////////////////////////////////////////////////// CLOUDANT STUFF
 var Cloudant = require('@cloudant/cloudant');
 var me = '1f4f3453-d758-4393-a422-2010efd3d530-bluemix'; // Set this to your own account
@@ -41,6 +43,9 @@ app.use(cookieParser());
 
 // Set Static Folder
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public/pdfs')));
+
+console.log("The current path is "+__dirname)
 
 // Express Session
 app.use(session({

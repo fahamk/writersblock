@@ -69,6 +69,11 @@ html(lang='en')
       // /.container-fluid
     section#signUp.bg-primary
       center
+        if uploaded == true
+          .alert.alert-success
+            strong Success!
+            |  Your book has been uploaded!
+
         #ratingInfo.row
           .col-sm-3
             .rating-block

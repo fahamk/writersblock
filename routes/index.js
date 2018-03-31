@@ -8,6 +8,10 @@ var util = require('util');
 var fs = require('fs')
 const uuidv1 = require('uuid/v1');
 const {google} = require('googleapis');
+const firebase = require('firebase');
+const googleStorage = require('@google-cloud/storage');
+const Multer = require('multer');
+
 
 var config = {
     endpoint: 's3-api.dal-us-geo.objectstorage.softlayer.net',
@@ -18,6 +22,24 @@ var config = {
 
 var cos = new AWS.S3(config);
 
+//var admin = require("firebase-admin");
+
+//var serviceAccount = require("../formidable-rune.json");
+
+//admin.initializeApp({
+//  credential: admin.credential.cert(serviceAccount),
+//  databaseURL: "https://formidable-rune-199321.firebaseio.com",
+//  storageBucket: "gs://formidable-rune-199321.appspot.com/"
+//});
+
+//var storageRef = admin.storage().ref();
+
+const storage = googleStorage({
+  projectId: "formidable-rune-199321",
+  keyFilename: "formidable-rune.json"
+});
+
+const bucket = storage.bucket("formidable-rune-199321.appspot.com");
 
 // Get Homepage
 router.get('/', function(req, res){
@@ -87,7 +109,6 @@ router.get('/browse', function(req, res){
      }
      if(req.isAuthenticated()){
        console.log("We are authenticated")
-       console.log("Authers username is "+ books[0].authorUsername)
        res.render('browse',{ bookArray : books, userID: true })
      }
      else{
@@ -163,19 +184,89 @@ router.post('/upload',ensureAuthenticated, function(req, res) {
       		})
       	})
 
-
-
-        // Use the mv() method to place the file somewhere on your server
+/*
+        if (sampleFile) {
+          uploadImageToStorage(sampleFile).then((success) => {
+            res.status(200).send({
+              status: 'success'
+            });
+          }).catch((error) => {
+            console.error(error);
+          });
+        }
+*/
+      //   Use the mv() method to place the file somewhere on your server
       	  sampleFile.mv('public/pdfs/'+id+'.pdf', function(err) {
-          if (err)
-            return res.status(500).send(err);
-
-          res.send('File uploaded!');
+            if (err){
+              res.render('upload',
+              { notUploaded : true }
+              )
+            }
+            else{
+              res.render('profile',
+                { uploaded : true }
+              )
+            }
         });
+
       });
     }
   }
 });
+
+
+
+function uploadtoFirebase(file){
+
+}
+
+/**
+ * Upload the image file to Google Storage
+ * @param {File} file object that will be uploaded to Google Storage
+ */
+const uploadImageToStorage = (file) => {
+  let prom = new Promise((resolve, reject) => {
+    if (!file) {
+      reject('No image file');
+    }
+    let newFileName = file.name;
+    let fileUpload = bucket.file(newFileName);
+
+
+    const blobStream = fileUpload.createWriteStream({
+
+      metadata: {
+        contentType: file.mimetype
+      }
+    });
+
+    blobStream.on('error', (error) => {
+      reject('Something is wrong! Unable to upload at the moment.');
+    });
+
+    blobStream.on('finish', () => {
+      // The public URL can be used to directly access the file via HTTP.
+      const url = "https://storage.googleapis.com/"+bucket.name+"/"+fileUpload.name
+
+      console.log("OMG DONE : "+url)
+      resolve(url);
+    })
+
+    blobStream.end(file.buffer);
+
+  });
+  return prom;
+}
+
+
+const multer = Multer({
+  storage: Multer.memoryStorage(),
+  limits: {
+    fileSize: 5 * 1024 * 1024 // no larger than 5mb, you can change as needed.
+  }
+});
+
+
 
 function uploadFile(info){
 	console.log('Creating object');

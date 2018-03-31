@@ -75,8 +75,8 @@ module.exports.getUserById = function(id, callback){
       callback(null,false)
     }
     else{
-      console.log("We successfully searched and here is the id: "+data._id);
-      console.log(`Document contents:` + JSON.stringify(data));
+      //console.log("We successfully searched and here is the id: "+data._id);
+      //console.log(`Document contents:` + JSON.stringify(data));
       callback(null, data._id)
     }
   });
@@ -97,8 +97,8 @@ module.exports.getUserInfoById = function(id, callback){
       callback(null,false)
     }
     else{
-      console.log("We successfully searched and here is the id: "+data._id);
-      console.log(`Document contents:` + JSON.stringify(data));
+      //console.log("We successfully searched and here is the id: "+data._id);
+      //console.log(`Document contents:` + JSON.stringify(data));
       callback(null, data)
     }
   });
@@ -110,8 +110,8 @@ module.exports.updateUserInfo = function(user, callback){
       callback(null,false)
     }
     else{
-      console.log("We successfully searched and here is the id: "+data._id);
-      console.log(`Document contents:` + JSON.stringify(data));
+      //console.log("We successfully searched and here is the id: "+data._id);
+      //console.log(`Document contents:` + JSON.stringify(data));
 
       Cloudant({account:me, password:password}, function(er, cloudant) {
         if (er)

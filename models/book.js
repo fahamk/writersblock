@@ -32,8 +32,8 @@ module.exports.getBookByBookname = function(bookname, callback){
      console.log("Now getting book")
      if(result.rows.length>0){
        searchBook.get(result.rows[0].id, { revs_info: true }, function(err, data) {
-         console.log(`Document contents:` + JSON.stringify(data));
-         console.log("And the id is "+data._id)
+         //console.log(`Document contents:` + JSON.stringify(data));
+         //console.log("And the id is "+data._id)
          callback(null, data)
        });
      }
@@ -49,8 +49,8 @@ module.exports.getBookById = function(id, callback){
       callback(null,false)
     }
     else{
-      console.log("We successfully searched and here is the id: "+data._id);
-      console.log(`Document contents:` + JSON.stringify(data));
+      //console.log("We successfully searched and here is the id: "+data._id);
+      //console.log(`Document contents:` + JSON.stringify(data));
       callback(null, data._id)
     }
   });
@@ -63,8 +63,8 @@ module.exports.getBookInfoById = function(id, callback){
       callback(null,false)
     }
     else{
-      console.log("We successfully searched and here is the id: "+data._id);
-      console.log(`Document contents:` + JSON.stringify(data));
+      //console.log("We successfully searched and here is the id: "+data._id);
+      //console.log(`Document contents:` + JSON.stringify(data));
       callback(null, data)
     }
   });
