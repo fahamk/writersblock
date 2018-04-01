@@ -81,7 +81,7 @@ html(lang='en')
           each book in bookArray
             .col-lg-3.col-sm-6
               .card.hovercard(style="overflow: scroll; height:350px;")
-                .cardheader(style="background: url(\"http://lorempixel.com/850/280/nature/4/\")")
+                .cardheader(style="background: url("+book.imageURL+"); background-size: 300px;")
                 .avatar
                   // img(alt='', src='/public/images/newapp-icon.png')
                   br
@@ -89,7 +89,7 @@ html(lang='en')
                   br
                 .info
                   .title
-                    a(href='/read/'+book.id) #{book.title}
+                    a(href='/read/'+book.id style="word-wrap: break-word") #{book.title}
                   .desc #{book.authorUsername}
                   .desc Genre: #{book.genre}
                   .desc Rating: #{book.rating}/5

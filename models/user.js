@@ -23,8 +23,8 @@ module.exports.createUser = function(newUser, callback){
         users.insert(newUser, function(err, body, header) {
           if (err)
             return console.log('[users.insert] ', err.message)
-          console.log('you have inserted the user info.')
-          console.log(body)
+          //console.log('you have inserted the user info.')
+          //console.log(body)
         })
   })
 }
@@ -40,8 +40,8 @@ module.exports.updateUser = function(newUser, callback){
         users.insert(newUser, function(err, body, header) {
           if (err)
             return console.log('[users.insert] ', err.message)
-          console.log('you have inserted the user info.')
-          console.log(body)
+          //console.log('you have inserted the user info.')
+          //console.log(body)
         })
   })
 }
@@ -52,11 +52,11 @@ module.exports.getUserByUsername = function(username, callback){
      if (er) {
        throw er;
      }
-     console.log("Now getting user")
+     //console.log("Now getting user")
      if(result.rows.length>0){
        searchuser.get(result.rows[0].id, { revs_info: true }, function(err, data) {
-         console.log(`Document contents:` + JSON.stringify(data));
-         console.log("And the id is "+data._id)
+         //console.log(`Document contents:` + JSON.stringify(data));
+        // console.log("And the id is "+data._id)
 
          callback(null, data)
 

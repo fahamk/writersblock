@@ -61,13 +61,13 @@ html(lang='en')
       center
         if fileNotUploaded == true
           .alert.alert-danger
-            strong File Not Uploaded!
+            strong No File Selected. File Not Uploaded!
             |  Please Select a file
         if notUploaded == true
           .alert.alert-danger
-            strong File Not Uploaded!
+            strong Genre Not Selected. File Not Uploaded!
             |  Please Choose a Genre
-        h1 Choose a File
+        h1 Upload a Book
         hr
         form#uploadForm(ref='uploadForm', action='/upload', method='post', enctype='multipart/form-data')
           .file-upload
@@ -75,6 +75,7 @@ html(lang='en')
               #fileName.file-select-button Choose File Or Drag n' Drop
               #noFile.file-select-name No file chosen...
               input#chooseFile(type='file', name='chooseFile', accept='application/pdf')
+                
           select#genre.selectpicker(style='padding-bottom:5%' name="genre")
             option Pick a Genre
             option Science fiction
@@ -83,7 +84,7 @@ html(lang='en')
             option Action and Adventure
             option Romance
             option Mystery
-            option Horror
+            option Horror http://horror.wpengine.netdna-cdn.com/wp-content/uploads/2018/02/pen2-1024x576-2-1024x576-1024x576-1024x576.jpg
             option Self help
             option Health
             option Guide
