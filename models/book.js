@@ -180,8 +180,10 @@ module.exports.addRatingToBook = function(id, rating, callback){
       //console.log("We successfully searched and here is the id: "+data._id);
       //console.log(`Document contents:` + JSON.stringify(data));
       var currentRate = parseFloat((data.rating*data.numberOfRatings).toFixed(2))
+      console.log("Current rate is: "+currentRate)
       data.numberOfRatings = data.numberOfRatings + 1;
-      data.rating = parseFloat(((currentRate + rating)/data.numberOfRatings).toFixed(2))
+      data.rating = parseFloat(((currentRate + parseFloat(rating))/data.numberOfRatings).toFixed(2))
+
 
       //console.log(`Document contents:` + JSON.stringify(data));
       Cloudant({account:me, password:password}, function(er, cloudant) {

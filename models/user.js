@@ -144,7 +144,7 @@ module.exports.updateUserRating = function(id, rating, callback){
 			//console.log("The rating was "+data.rating)
 			var currentRate = parseFloat((data.rating*data.numberOfRatings).toFixed(2))
       data.numberOfRatings = data.numberOfRatings + 1;
-      data.rating = parseFloat(((currentRate + rating)/data.numberOfRatings).toFixed(2))
+			data.rating = parseFloat(((currentRate + parseFloat(rating))/data.numberOfRatings).toFixed(2))
 			//console.log("The rating is "+data.rating)
       //console.log("We successfully searched and here is the id: "+data._id);
       //console.log(`Document contents:` + JSON.stringify(data));
