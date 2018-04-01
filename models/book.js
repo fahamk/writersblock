@@ -70,6 +70,19 @@ module.exports.getBookInfoById = function(id, callback){
   });
 }
 
+module.exports.getBookAuthorID = function(id, callback){
+  searchBook.get(id, {include_docs:true}, function(err, data) {
+    if(err){
+      callback(null,false)
+    }
+    else{
+      //console.log("We successfully searched and here is the id: "+data._id);
+      //console.log(`Document contents:` + JSON.stringify(data));
+      callback(null, data.authorID)
+    }
+  });
+}
+
 module.exports.getBooks = function(id, callback){
   searchBook.list({include_docs:true},function (err, data) {
     if(err){
@@ -113,7 +126,7 @@ module.exports.getBooks = function(id, callback){
         }
 
         console.log("The image url is: "+imageURL);
-        var book = {id:data.rows[i].id, title:title.substring(0, (title.length-4)), rating:data.rows[i].doc.rating, views:data.rows[i].doc.views, genre:data.rows[i].doc.genre, authorID:data.rows[i].doc.authorID, description:data.rows[i].doc.description, authorUsername:data.rows[i].doc.authorUsername, imageURL: imageURL  };
+        var book = {id:data.rows[i].id, title:title.substring(0, (title.length-4)), rating:data.rows[i].doc.rating, views:data.rows[i].doc.views, genre:data.rows[i].doc.genre, authorID:data.rows[i].doc.authorID, description:data.rows[i].doc.description, authorUsername:data.rows[i].doc.authorUsername, imageURL: imageURL, numberOfRatings:data.rows[i].doc.numberOfRatings };
         var test = {authorUsername:data.rows[i].doc.authorUsername}
         booksArray.push(book)
       }
@@ -121,5 +134,74 @@ module.exports.getBooks = function(id, callback){
       //console.log("----------------------------------------------------------------------------------------")
       callback(null, booksArray)
   }
+  });
+}
+
+
+
+module.exports.addViewToBook = function(id, callback){
+  searchBook.get(id, {include_docs:true}, function(err, data) {
+    if(err){
+      callback(null,false)
+    }
+    else{
+      //console.log("We successfully searched and here is the id: "+data._id);
+      //console.log(`Document contents:` + JSON.stringify(data));
+      data.views= data.views+1;
+      //console.log(`Document contents:` + JSON.stringify(data));
+      Cloudant({account:me, password:password}, function(er, cloudant) {
+        if (er){
+          return console.log('Error connecting to Cloudant account %s: %s', me, er.message)
+          callback(null, false)
+        }
+              // specify the database we are going to use
+            // and insert a document in it
+        else{
+          searchBook.insert(data, function(err, body, header) {
+                if (err)
+                  return console.log('[book.insert] ', err.message)
+                callback(null, data)
+
+              //  console.log('you have inserted the book info.')
+              //  console.log(body)
+          })
+        }
+      })
+    }
+  });
+}
+
+module.exports.addRatingToBook = function(id, rating, callback){
+  searchBook.get(id, {include_docs:true}, function(err, data) {
+    if(err){
+      callback(null,false)
+    }
+    else{
+      //console.log("We successfully searched and here is the id: "+data._id);
+      //console.log(`Document contents:` + JSON.stringify(data));
+      var currentRate = parseFloat((data.rating*data.numberOfRatings).toFixed(2))
+      data.numberOfRatings = data.numberOfRatings + 1;
+      data.rating = parseFloat(((currentRate + rating)/data.numberOfRatings).toFixed(2))
+
+      //console.log(`Document contents:` + JSON.stringify(data));
+      Cloudant({account:me, password:password}, function(er, cloudant) {
+        if (er){
+          return console.log('Error connecting to Cloudant account %s: %s', me, er.message)
+          callback(null, false)
+        }
+              // specify the database we are going to use
+            // and insert a document in it
+        else{
+          searchBook.insert(data, function(err, body, header) {
+                if (err)
+                  return console.log('[book.insert] ', err.message)
+                callback(null, data)
+
+              //  console.log('you have inserted the book info.')
+              //  console.log(body)
+          })
+        }
+      })
+    }
   });
 }

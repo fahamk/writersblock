@@ -56,6 +56,7 @@ router.post('/register', function(req, res){
 		"password": upassword,
 		"book_ids" : "",
 		"rating": 0,
+		"numberOfRatings" : 0,
 		"book_count" : 0
 	  }
 		console.log("Now creating the user")

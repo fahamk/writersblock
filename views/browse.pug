@@ -92,7 +92,7 @@ html(lang='en')
                     a(href='/read/'+book.id style="word-wrap: break-word") #{book.title}
                   .desc #{book.authorUsername}
                   .desc Genre: #{book.genre}
-                  .desc Rating: #{book.rating}/5
+                  .desc Rating: #{book.rating}/5 (#{book.numberOfRatings})
                 .bottom
                   a.btn.btn-primary.btn-twitter.btn-sm(href='#')
                     i.fa.fa-address-book 

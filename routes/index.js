@@ -90,12 +90,18 @@ router.get('/book/:bookID', function(req, res){
 	console.log("Book is set to " + req.params.bookID);
   var link = "https://firebasestorage.googleapis.com/v0/b/formidable-rune-199321.appspot.com/o/"+req.params.bookID+"?alt=media&token=24ef3dae-b61a-44aa-88d4-51a41952065d"
   var tempFile="public/pdfs/"+req.params.bookID+".pdf";
+
+  Book.addViewToBook(req.params.bookID, function(err, book){
+     if(err) throw err;
+   })
   res.redirect(link);
   //fs.readFile(tempFile, function (err,data){
   //   res.contentType("application/pdf");
 //     res.send(data);
 //  });
 });
+
+
 
 router.get('/read/:bookID', function(req, res){
 
@@ -104,6 +110,27 @@ router.get('/read/:bookID', function(req, res){
 	{ bookID : req.params.bookID }
 	)
 
+});
+
+router.post('/rating/:bookID',function(req, res) {
+
+  console.log("WE GOT A RATING BOYS"+ req.body.star + " " +req.params.bookID)
+  Book.addRatingToBook(req.params.bookID, req.body.star, function(err, book){
+     if(err) throw err;
+   })
+
+   Book.getBookAuthorID(req.params.bookID, function(err, id){
+      if(err) throw err;
+
+      User.updateUserRating(id, req.body.star, function(err, book){
+         if(err) throw err;
+       })
+    })
+
+
+
+
+  res.redirect('/read/'+req.params.bookID);
 });
 
 
@@ -182,6 +209,7 @@ router.post('/upload', (req, res) => {
       	 "description": "",
       	 "views": 0,
       	 "rating": 0,
+         "numberOfRatings":0,
       	 "authorID": req.user,
          "authorUsername": username,
          "imageID":imageID,
@@ -286,102 +314,7 @@ router.post('/upload', (req, res) => {
 
 /*
 router.post('/upload', multer.single('chooseFile'),ensureAuthenticated, function(req, res) {
-  console.log("We got the file, and it is: "+req.chooseFile);
-  if (!req.files.chooseFile){
 
-    res.render('upload',
-    { fileNotUploaded : true }
-    )
-  }
-  else{
-    var genre=req.body.genre
-    if(genre == "Pick a Genre"){
-        res.render('upload',
-        { notUploaded : true }
-        )
-
-    }
-    else{
-      // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
-      let sampleFile = req.files.chooseFile;
-      User.getUserInfoById(req.user, function(err, user) {
-        console.log("Getting user by id: "+user.username)
-        var username = user.username
-        var id = uuidv1();
-      	var newBook = {
-      	 "_id": id,
-      	 "title": req.files.chooseFile.name,
-      	 "genre": req.body.genre,
-      	 "description": "",
-      	 "views": 0,
-      	 "rating": 0,
-      	 "authorID": req.user,
-         "authorUsername": username
-      	 }
-
-      	Book.createBook(newBook, function(err, book){
-      		 if(err) throw err;
-      		 console.log("ESKITTIT"+book);
-      	 })
-
-      	//var test= fs.createReadStream('public/pdfs/Portfolio-Culminating Assignment Part 2.pdf')
-      	//uploadFile(req.files.userfile);
-      	console.log()
-      	User.getUserInfoById(req.user, function(err, user){
-      		if(err) throw err;
-      		//console.log("User is:"+JSON.stringify(user))
-      		if(user.book_ids == ""){
-      			user.book_ids = id
-      		}
-      		else{
-      			user.book_ids = user.book_ids +","+id
-      		}
-      		//console.log("Updated user is:"+JSON.stringify(user))
-      		User.updateUser(user, function(err, updatedUser){
-      			if(err) throw err;
-      			//console.log("User is:"+JSON.stringify(updatedUser))
-      			user.book_ids = updatedUser.book_ids +","+id
-      			//console.log("Updated user is:"+JSON.stringify(updatedUser))
-      		})
-      	})
-
-
-//        sendUploadToGCS(sampleFile)
-
-/*
-        if (sampleFile) {
-          uploadImageToStorage(sampleFile).then((success) => {
-            res.status(200).send({
-              status: 'success'
-            });
-          }).catch((error) => {
-            console.error(error);
-          });
-        }
-*/
-      //   Use the mv() method to place the file somewhere on your server
-
-      /*
-      	  sampleFile.mv('public/pdfs/'+id+'.pdf', function(err) {
-            if (err){
-              res.render('upload',
-              { notUploaded : true }
-              )
-            }
-            else{
-              res.render('profile',
-                { uploaded : true }
-              )
-            }
-        });
-
-
-      */
-
-/*
-      });
-    }
-  }
 });
 
 */

@@ -36,6 +36,7 @@ module.exports.updateUser = function(newUser, callback){
       return console.log('Error connecting to Cloudant account %s: %s', me, er.message)
           // specify the database we are going to use
         var users = cloudant.db.use('users')
+
         // and insert a document in it
         users.insert(newUser, function(err, body, header) {
           if (err)
@@ -126,6 +127,41 @@ module.exports.updateUserInfo = function(user, callback){
 
               console.log('you have inserted the user info.')
               console.log(body)
+            })
+      })
+      callback(null, data)
+    }
+  });
+}
+
+
+module.exports.updateUserRating = function(id, rating, callback){
+  searchuser.get(id, {include_docs:true}, function(err, data) {
+    if(err){
+      callback(null,false)
+    }
+    else{
+			//console.log("The rating was "+data.rating)
+			var currentRate = parseFloat((data.rating*data.numberOfRatings).toFixed(2))
+      data.numberOfRatings = data.numberOfRatings + 1;
+      data.rating = parseFloat(((currentRate + rating)/data.numberOfRatings).toFixed(2))
+			//console.log("The rating is "+data.rating)
+      //console.log("We successfully searched and here is the id: "+data._id);
+      //console.log(`Document contents:` + JSON.stringify(data));
+
+      Cloudant({account:me, password:password}, function(er, cloudant) {
+        if (er)
+          return console.log('Error connecting to Cloudant account %s: %s', me, er.message)
+
+              // specify the database we are going to use
+            var users = cloudant.db.use('users')
+            // and insert a document in it
+            users.insert(data, function(err, body, header) {
+              if (err)
+                return console.log('[users.insert] ', err.message)
+
+              console.log('you have inserted the user info.')
+              //console.log(body)
             })
       })
       callback(null, data)
