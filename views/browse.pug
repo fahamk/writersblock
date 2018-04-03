@@ -134,7 +134,8 @@ html(lang='en')
               .info
                 .title
                   a(href='/read/'+book.id style="word-wrap: break-word") #{book.title}
-                .desc #{book.authorUsername}
+                .desc 
+                  a(href='/userprofile/'+book.authorID) #{book.authorUsername}
                 .desc Genre: #{book.genre}
                 if book.rating == 0
                   .desc Rating: No Rating Yet

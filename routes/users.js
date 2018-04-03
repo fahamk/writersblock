@@ -40,34 +40,43 @@ router.post('/register', function(req, res){
 	var username = req.body.username;
 	var upassword = req.body.password;
 	var upassword2 = req.body.password2;
-	var Cloudant = require('@cloudant/cloudant');
-	var me = '1f4f3453-d758-4393-a422-2010efd3d530-bluemix'; // Set this to your own account
-	var cpassword = '28a1e839547250fe22c3e85e46c9f6200a26428ccd6fa95ade3778162b939779';
-	var cloudant = Cloudant({account:me, password:cpassword});
-	cloudant.db.list(function(err, allDbs) {
-	  console.log('All my databases: %s', allDbs.join(', '))
-	});
+	if(upassword != upassword2){
+		console.log("not sure wtf this is")
+		res.render('register',
+		{ pNotMatch : true }
+		)
+	}
+	else{
+		var Cloudant = require('@cloudant/cloudant');
+		var me = '1f4f3453-d758-4393-a422-2010efd3d530-bluemix'; // Set this to your own account
+		var cpassword = '28a1e839547250fe22c3e85e46c9f6200a26428ccd6fa95ade3778162b939779';
+		var cloudant = Cloudant({account:me, password:cpassword});
+		cloudant.db.list(function(err, allDbs) {
+		  console.log('All my databases: %s', allDbs.join(', '))
+		});
 
 
-	 var newUser = {
-  	"name": name,
-  	"email": email,
-		"username": username,
-		"password": upassword,
-		"book_ids" : "",
-		"rating": 0,
-		"numberOfRatings" : 0,
-		"book_count" : 0
-	  }
-		console.log("Now creating the user")
+		 var newUser = {
+	  	"name": name,
+	  	"email": email,
+			"username": username,
+			"password": upassword,
+			"book_ids" : "",
+			"rating": 0,
+			"numberOfRatings" : 0,
+			"book_count" : 0
+		  }
+			console.log("Now creating the user")
 
-	 User.createUser(newUser, function(err, user){
-		 if(err) throw err;
-		 console.log("ESKITTIT"+newUser);
-	 })
+		 User.createUser(newUser, function(err, user){
+			 if(err) throw err;
+			 console.log("ESKITTIT"+newUser);
+		 })
 
-	 req.flash('success_msg', 'You are registered and can now login');
-	 res.redirect('/users/login')
+		 req.flash('success_msg', 'You are registered and can now login');
+		 res.redirect('/users/login')
+	}
+
 });
 
 //User.getUserByUsername("asd", function(err, user){

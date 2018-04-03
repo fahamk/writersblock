@@ -85,7 +85,6 @@ router.get('/', function(req, res){
 	  { userID : false }
 	  )
 	}
-
 });
 
 router.get('/book/:bookID', function(req, res){
@@ -168,6 +167,7 @@ function ensureAuthenticated(req, res, next){
 
 router.get('/profile', ensureAuthenticated, function(req, res){
   var aid = req.user
+
   Book.getBooks(null, function(err, books){
 		 if(err){
        res.send(err)
@@ -430,7 +430,7 @@ router.post('/upload', (req, res) => {
 
           console.log("We came here after upload")
           if(!req.files.chooseImage){
-            res.render('profile',
+            res.render('upload',
               { uploaded : true }
             )
           }
@@ -448,7 +448,7 @@ router.post('/upload', (req, res) => {
                 restify.InternalServerError(err);
               })
               .on('finish', () => {
-                res.render('profile',
+                res.render('upload',
                   { uploaded : true }
                 )
               })

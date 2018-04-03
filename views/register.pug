@@ -54,6 +54,9 @@ html(lang='en')
       // /.container-fluid
     section#signUp.bg-primary
       form(method='post', action='/users/register')
+        if pNotMatch == true
+          .alert.alert-warning
+            strong Passwords Did Not Match!
         .container
           h1 Sign Up
           p Please fill in this form to create an account.
@@ -103,4 +106,4 @@ html(lang='en')
     script(src='../vendor/scrollreveal/scrollreveal.min.js')
     script(src='../vendor/magnific-popup/jquery.magnific-popup.min.js')
     // Theme JavaScript
-    script(src='../js/creative.min.js')
+    script(src='../js/creative.js')

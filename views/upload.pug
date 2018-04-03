@@ -66,6 +66,11 @@ html(lang='en')
           .alert.alert-danger
             strong Genre Not Selected. File Not Uploaded!
             |  Please Choose a Genre
+        center
+          if uploaded == true
+            .alert.alert-success
+              strong Success!
+              |  Your book has been uploaded!
         h1 Upload a Book
         hr
         form#uploadForm(ref='uploadForm', action='/upload', method='post', enctype='multipart/form-data')
