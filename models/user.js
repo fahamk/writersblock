@@ -93,7 +93,7 @@ module.exports.comparePassword = function(candidatePassword, hash, callback){
 
 
 module.exports.getUserInfoById = function(id, callback){
-  searchuser.get(id, { revs_info: true }, function(err, data) {
+  searchuser.get(id, {include_docs:true}, function(err, data) {
     if(err){
       callback(null,false)
     }

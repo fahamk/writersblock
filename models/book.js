@@ -58,11 +58,30 @@ module.exports.getBookById = function(id, callback){
 }
 
 module.exports.getBookInfoById = function(id, callback){
+  searchBook.get(id, {include_docs:true}, function(err, data) {
+    if(err){
+      callback(null,false)
+    }
+    else{
+      //console.log("We successfully searched and here is the id: "+data._id);
+      //console.log(`Document contents:` + JSON.stringify(data));
+      callback(null, data)
+    }
+  });
+}
+
+module.exports.deleteBookByID = function(id, callback){
   searchBook.get(id, { revs_info: true }, function(err, data) {
     if(err){
       callback(null,false)
     }
     else{
+      var latestRev = data._rev;
+      searchBook.destroy(id, latestRev, function(err, body, header) {
+        if (!err) {
+            console.log("Successfully deleted doc", id);
+        }
+      });
       //console.log("We successfully searched and here is the id: "+data._id);
       //console.log(`Document contents:` + JSON.stringify(data));
       callback(null, data)
@@ -126,7 +145,8 @@ module.exports.getBooks = function(id, callback){
         }
 
         console.log("The image url is: "+imageURL);
-        var book = {id:data.rows[i].id, title:title.substring(0, (title.length-4)), rating:data.rows[i].doc.rating, views:data.rows[i].doc.views, genre:data.rows[i].doc.genre, authorID:data.rows[i].doc.authorID, description:data.rows[i].doc.description, authorUsername:data.rows[i].doc.authorUsername, imageURL: imageURL, numberOfRatings:data.rows[i].doc.numberOfRatings };
+        var percent = data.rows[i].doc.rating * 20
+        var book = {id:data.rows[i].id, title:title.substring(0, (title.length-4)), rating:data.rows[i].doc.rating, views:data.rows[i].doc.views, genre:data.rows[i].doc.genre, authorID:data.rows[i].doc.authorID, description:data.rows[i].doc.description, authorUsername:data.rows[i].doc.authorUsername, imageURL: imageURL, numberOfRatings:data.rows[i].doc.numberOfRatings, publishDate: data.rows[i].doc.publishDate, percent: percent };
         var test = {authorUsername:data.rows[i].doc.authorUsername}
         booksArray.push(book)
       }

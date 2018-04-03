@@ -42,29 +42,81 @@ html(lang='en')
             | WritersBlock
         // Collect the nav links, forms, and other content for toggling
         #bs-example-navbar-collapse-1.collapse.navbar-collapse
-          ul.nav.navbar-nav.navbar-right
-            li
-              a.page-scroll(href='/browse') Browse
-            li
-              a.page-scroll(href='/users/login') Login
-            li
-              a.page-scroll(href='/users/register') Sign Up
+          if userID == false
+            ul.nav.navbar-nav.navbar-right
+              li
+                a.page-scroll(href='/browse') Browse
+              li
+                a.page-scroll(href='/users/login') Login
+              li
+                a.page-scroll(href='/users/register') Sign Up
+          else
+            ul.nav.navbar-nav.navbar-right
+              li
+                a.page-scroll(href='/browse') Browse
+              li
+                a.page-scroll(href='/upload') Upload
+              li
+                a.page-scroll(href='/profile') Account
+              li
+                a.page-scroll(href='/users/logout') Logout
         // /.navbar-collapse
       // /.container-fluid
-    section#signUp.bg-primary
-      form(method='post', action='/users/login')
-        .container
-          h1 Login
-          hr
-          label Username
-          input.form-control(type='text', name='username', placeholder='Username')
-          label Password
-          input.form-control(type='password', name='password', placeholder='Password')
-          label
-            input(type='checkbox', checked='checked', name='remember', style='margin-bottom:15px')
-            |  Remember me
-          .clearfix
-            button.signupbtn2(type='submit') Login
+    section#signUp.bg-primary(style="height:50px")
+      center
+        if uploaded == true
+          .alert.alert-success
+            strong Success!
+            |  Your book has been uploaded!
+
+      center
+        h1(style="display:inline-block") #{userName}
+    
+    aside.bg-dark
+      center
+        .rating-block
+          h4 Average user rating
+          h2.bold.padding-bottom-7
+            | #{rating} 
+            small / 5 (#{numberOfRatings})
+        
+      .star-ratings-sprite
+        span.star-ratings-sprite-rating(style='width:'+percent+'%')
+      script(src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js')
+      
+    .container
+      .row
+        if hasBooks == true
+          each book in bookArray
+            .col-lg-3.col-sm-6
+              .card.hovercard(style="overflow: scroll; height:350px;")
+                .cardheader(style="background: url("+book.imageURL+"); background-size: 300px;")
+                .avatar
+                  // img(alt='', src='/public/images/newapp-icon.png')
+                  br
+                  br
+                  br
+                .info
+                  .title
+                    a(href='/read/'+book.id style="word-wrap: break-word") #{book.title}
+                  .desc #{book.authorUsername}
+                  .desc Genre: #{book.genre}
+                  if book.rating == 0
+                    .desc Rating: No Rating Yet
+                  else
+                    .star-ratings-sprite
+                      span.star-ratings-sprite-rating(style='width:'+book.percent+'%')
+                    .desc Rating: #{book.rating}/5 (#{book.numberOfRatings})
+                .bottom
+                  a.btn.btn-primary.btn-twitter.btn-sm(href='#')
+                    i.fa.fa-address-book 
+                  a.btn.btn-danger.btn-sm(rel='publisher', href='#')
+                    i.fa.fa-eye  #{book.views}
+                  
+        else
+          center
+            h1 No Books
+      
     aside.bg-dark
       .container.text-center
         .call-to-action
@@ -80,6 +132,7 @@ html(lang='en')
             i.fa.fa-envelope.fa-3x.sr-contact
             p
               a(href='mailto:kfaham@gmail.com') Email Us
+
     // jQuery
     script(src='../vendor/jquery/jquery.min.js')
     // Bootstrap Core JavaScript

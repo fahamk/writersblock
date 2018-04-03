@@ -10,6 +10,8 @@ const uuidv1 = require('uuid/v1');
 const {google} = require('googleapis');
 const firebase = require('firebase');
 const CLOUD_BUCKET = "formidable-rune-199321.appspot.com";
+var url = require('url');
+
 
 var config = {
     endpoint: 's3-api.dal-us-geo.objectstorage.softlayer.net',
@@ -101,15 +103,38 @@ router.get('/book/:bookID', function(req, res){
 //  });
 });
 
+router.get('/delete/:bookID', function(req, res){
+	var bookID= req.params.bookID;
+  Book.getBookInfoById(bookID, function(err, book){
+     if(err) throw err;
+     else{
 
+       if(book.authorID==req.user){
+         console.log("Yea we are deleting")
+         Book.deleteBookByID(bookID, function(err, book){
+            if(err) throw err;
+            else{
+              res.redirect('/profile')
+            }
+          })
+      }
+      else{
+        res.redirect('/profile')
+      }
+
+     }
+   })
+});
 
 router.get('/read/:bookID', function(req, res){
-
 	var tempFile="public/pdfs/"+req.params.bookID+".pdf";
-	res.render('read',
-	{ bookID : req.params.bookID }
-	)
-
+  Book.getBookInfoById(req.params.bookID, function(err, book){
+     if(err) throw err;
+     var title = book.title.substring(0, (book.title.length-4));
+     res.render('read',
+   	{ bookID : req.params.bookID, bookTitle : title}
+   	)
+   })
 });
 
 router.post('/rating/:bookID',function(req, res) {
@@ -126,10 +151,6 @@ router.post('/rating/:bookID',function(req, res) {
          if(err) throw err;
        })
     })
-
-
-
-
   res.redirect('/read/'+req.params.bookID);
 });
 
@@ -146,15 +167,79 @@ function ensureAuthenticated(req, res, next){
 }
 
 router.get('/profile', ensureAuthenticated, function(req, res){
-
-	res.render('profile')
+  var aid = req.user
+  Book.getBooks(null, function(err, books){
+		 if(err){
+       res.send(err)
+     }
+     books.sort(function(a, b){
+      return b.views - a.views;
+     })
+     books = books.filter(function (el) {
+          console.log("The user id is: "+aid)
+          console.log("The authodid is: "+el.authorID)
+          if(aid == el.authorID){
+            console.log("It matched")
+          }
+          return el.authorID == aid// Changed this so a home would match
+     });
+     var hasBooks = false
+     if(books.length>0){
+       hasBooks = true
+     }
+     User.getUserInfoById(aid, function(err, author){
+        if(err) throw err;
+        var userRating = author.rating
+        var userRatingPercent = userRating * 20
+        var userViews = author.numberOfRatings;
+        res.render('profile',{ bookArray : books, hasBooks: true, userName: author.username, rating:userRating, percent: userRatingPercent, numberOfRatings: userViews})
+      })
+	 })
 });
+
+router.get('/userprofile/:userID', function(req, res){
+	var aid=req.params.userID
+  Book.getBooks(null, function(err, books){
+		 if(err){
+       res.send(err)
+     }
+     books.sort(function(a, b){
+      return b.views - a.views;
+     })
+     books = books.filter(function (el) {
+          console.log("The user id is: "+aid)
+          console.log("The authodid is: "+el.authorID)
+          if(aid == el.authorID){
+            console.log("It matched")
+          }
+          return el.authorID == aid// Changed this so a home would match
+     });
+     var hasBooks = false
+     if(books.length>0){
+       hasBooks = true
+     }
+     User.getUserInfoById(aid, function(err, author){
+        if(err) throw err;
+        var userRating = author.rating
+        var userRatingPercent = userRating * 20
+        var userViews = author.numberOfRatings;
+        res.render('userprofile',{ bookArray : books, hasBooks: true, userName: author.username, rating:userRating, percent: userRatingPercent, numberOfRatings: userViews})
+      })
+	 })
+});
+
+
+
 
 router.get('/browse', function(req, res){
   Book.getBooks(null, function(err, books){
 		 if(err){
        res.send(err)
      }
+     books.sort(function(a, b){
+      return b.views - a.views;
+     })
+
      if(req.isAuthenticated()){
        console.log("We are authenticated")
        res.render('browse',{ bookArray : books, userID: true })
@@ -166,6 +251,86 @@ router.get('/browse', function(req, res){
   //res.render('browse')
 });
 
+router.post('/browse', function(req, res){
+  Book.getBooks(null, function(err, books){
+
+		 if(err){
+       res.send(err)
+     }
+     books.sort(function(a, b){
+      return b.views - a.views;
+     })
+     var genre = req.body.genre
+     var ratingRange = req.body.ratingRange
+     var dateRange = req.body.dateRange
+     var search = req.body.search
+     console.log("And the search is: "+search)
+     console.log("The rating range is: "+ratingRange)
+     console.log("The date Range is: "+dateRange)
+     if(genre != "Pick a Genre"){
+       books = books.filter(function (el) {
+        return el.genre == genre// Changed this so a home would match
+      });
+     }
+
+     if(search){
+       console.log("Yes there was a search")
+       books = books.filter(function (el) {
+        return el.title.includes(search)// Changed this so a home would match
+      });
+     }
+
+     if(ratingRange != "Rating Range..."){
+       if(ratingRange == "Highest to Lowest"){
+         books.sort(function(a, b){
+          return b.rating - a.rating;
+         })
+       }
+       else{
+         books.sort(function(a, b){
+          return a.rating - b.rating;
+         })
+       }
+     }
+     if(dateRange != "Date Range..."){
+       var today = new Date();
+
+       if(dateRange == "past week"){
+         var lastWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 7);
+         books = books.filter(function (el) {
+          return el.publishDate >= lastWeek// Changed this so a home would match
+        });
+       }
+       else if(dateRange == "past month"){
+         var lastMonth = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 30);
+         books = books.filter(function (el) {
+          return el.publishDate >= lastMonth// Changed this so a home would match
+        });
+       }
+       else if(dateRange == "past year"){
+         var lastYear = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 365);
+         books = books.filter(function (el) {
+          return el.publishDate >= lastYear// Changed this so a home would match
+        });
+       }
+
+     }
+
+
+     if(req.isAuthenticated()){
+       console.log("We are authenticated")
+       res.render('browse',{ bookArray : books, userID: true })
+     }
+     else{
+       res.render('browse',{ bookArray : books, userID: false })
+     }
+	 })
+  //res.render('browse')
+});
+
+function genreSet(genre) {
+    return age >= 18;
+}
 
 
 router.get('/upload', ensureAuthenticated, function(req, res){
