@@ -14,7 +14,7 @@ const fileUpload = require('express-fileupload');
 var cfenv = require('cfenv');
 var firebase = require("firebase");
 
-//////////////////////////////////////////////////////////////////////////////////////////////////// CLOUDANT STUFF
+//Setting Up Cloudant Credentials
 var Cloudant = require('@cloudant/cloudant');
 var me = '1f4f3453-d758-4393-a422-2010efd3d530-bluemix'; // Set this to your own account
 var password = '28a1e839547250fe22c3e85e46c9f6200a26428ccd6fa95ade3778162b939779';
@@ -89,7 +89,7 @@ app.use(function (req, res, next) {
 });
 
 
-
+//Setting up routes
 app.use('/', routes);
 app.use('/users', users);
 

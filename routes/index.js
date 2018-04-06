@@ -13,6 +13,7 @@ const CLOUD_BUCKET = "formidable-rune-199321.appspot.com";
 var url = require('url');
 
 
+//Firebase Storage Setup
 var config = {
     endpoint: 's3-api.dal-us-geo.objectstorage.softlayer.net',
     apiKeyId: 't4YOTrcghfoTuvquMx1Bkg2uchGEC9pJ6mxQb8LisCO5',
@@ -49,6 +50,7 @@ const storage = googleStorage({
 
 const bucket = storage.bucket("formidable-rune-199321.appspot.com");
 
+//Forcing file sizes
 const multer = Multer({
   storage: Multer.memoryStorage(),
   limits: {
@@ -82,6 +84,7 @@ router.get('/', function(req, res){
 	}
 });
 
+//Set up page to view the book.
 router.get('/book/:bookID', function(req, res){
 	console.log("Book is set to " + req.params.bookID);
   var link = "https://firebasestorage.googleapis.com/v0/b/formidable-rune-199321.appspot.com/o/"+req.params.bookID+"?alt=media&token=24ef3dae-b61a-44aa-88d4-51a41952065d"
@@ -91,12 +94,10 @@ router.get('/book/:bookID', function(req, res){
      if(err) throw err;
    })
   res.redirect(link);
-  //fs.readFile(tempFile, function (err,data){
-  //   res.contentType("application/pdf");
-//     res.send(data);
-//  });
 });
 
+
+//If the user is who they say they are, we allow them to delete the book.
 router.get('/delete/:bookID', function(req, res){
 	var bookID= req.params.bookID;
   Book.getBookInfoById(bookID, function(err, book){
@@ -120,6 +121,8 @@ router.get('/delete/:bookID', function(req, res){
    })
 });
 
+
+//Here we allow user to read book
 router.get('/read/:bookID', function(req, res){
 	var tempFile="public/pdfs/"+req.params.bookID+".pdf";
   Book.getBookInfoById(req.params.bookID, function(err, book){
@@ -131,8 +134,10 @@ router.get('/read/:bookID', function(req, res){
    })
 });
 
-router.post('/rating/:bookID',function(req, res) {
 
+//User can rate their book, so we have a post Request, that then routes
+//the user back to the book so they can continue reading
+router.post('/rating/:bookID',function(req, res) {
   console.log("WE GOT A RATING BOYS"+ req.body.star + " " +req.params.bookID)
   Book.addRatingToBook(req.params.bookID, req.body.star, function(err, book){
      if(err) throw err;
@@ -149,6 +154,7 @@ router.post('/rating/:bookID',function(req, res) {
 });
 
 
+//Some pages require users to be authenticated, this is the function to check
 function ensureAuthenticated(req, res, next){
 	if(req.isAuthenticated()){
 
@@ -160,6 +166,8 @@ function ensureAuthenticated(req, res, next){
 	}
 }
 
+
+//Get the users profile page, where they can delete their books
 router.get('/profile', ensureAuthenticated, function(req, res){
   var aid = req.user
 
@@ -192,6 +200,8 @@ router.get('/profile', ensureAuthenticated, function(req, res){
 	 })
 });
 
+
+//Profile page for another user, here they can see the authors total rating.
 router.get('/userprofile/:userID', function(req, res){
 	var aid=req.params.userID
   Book.getBooks(null, function(err, books){
@@ -225,7 +235,7 @@ router.get('/userprofile/:userID', function(req, res){
 
 
 
-
+//Here we set up the page so that the user can browse the books. They are arranged from most viewed.
 router.get('/browse', function(req, res){
   Book.getBooks(null, function(err, books){
 		 if(err){
@@ -246,6 +256,7 @@ router.get('/browse', function(req, res){
   //res.render('browse')
 });
 
+//If the user wants to filter the book, here is where we handle that request.
 router.post('/browse', function(req, res){
   Book.getBooks(null, function(err, books){
 
@@ -340,12 +351,12 @@ function genreSet(genre) {
     return age >= 18;
 }
 
-
+//Set up upload page
 router.get('/upload', ensureAuthenticated, function(req, res){
 	res.render('upload')
 });
 
-//ADD THIS if it stops working multer.single('chooseFile'),
+//Upload the book to the firebase storage and also create its reference in the nosql cloudant database.
 router.post('/upload', (req, res) => {
 
   if (!req.files.chooseFile){
@@ -395,8 +406,7 @@ router.post('/upload', (req, res) => {
       		 console.log("ESKITTIT"+book);
       	 })
 
-      	//var test= fs.createReadStream('public/pdfs/Portfolio-Culminating Assignment Part 2.pdf')
-      	//uploadFile(req.files.userfile);
+
       	console.log()
       	User.getUserInfoById(req.user, function(err, user){
       		if(err) throw err;
@@ -417,7 +427,6 @@ router.post('/upload', (req, res) => {
       	})
 
 
-//        sendUploadToGCS(sampleFile)
           const chooseFile = req.files.chooseFile;
           const gcsname = chooseFile.name;
           const files = bucket.file(id);
@@ -471,26 +480,8 @@ router.post('/upload', (req, res) => {
 
 
 
-//////////////////////
-
-
-//  if (file) {
-  //  uploadImageToStorage(file).then((success) => {
-  //    res.status(200).send({
-  //      status: 'success'
-  //    });
-//    }).catch((error) => {
-//      console.error(error);
-//    });
-//  }
 });
 
-/*
-router.post('/upload', multer.single('chooseFile'),ensureAuthenticated, function(req, res) {
-
-});
-
-*/
 
 
 

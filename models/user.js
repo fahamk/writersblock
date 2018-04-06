@@ -8,6 +8,8 @@ var searchuser = cloudant.db.use('users')
 
 var User = module.exports
 
+
+//Create user function
 module.exports.createUser = function(newUser, callback){
 	bcrypt.genSalt(10, function(err, salt) {
 	    bcrypt.hash(newUser.password, salt, function(err, hash) {
@@ -30,6 +32,7 @@ module.exports.createUser = function(newUser, callback){
 }
 
 
+//Upadate user info function
 module.exports.updateUser = function(newUser, callback){
   Cloudant({account:me, password:password}, function(er, cloudant) {
     if (er)
@@ -48,6 +51,7 @@ module.exports.updateUser = function(newUser, callback){
 }
 
 
+//Get the user id by the username
 module.exports.getUserByUsername = function(username, callback){
   searchuser.search('user', 'newSearch', {q:'username:'+username}, function(er, result) {
      if (er) {
@@ -69,8 +73,8 @@ module.exports.getUserByUsername = function(username, callback){
    });
 }
 
+//if you have Id get user by their userid
 module.exports.getUserById = function(id, callback){
-
   searchuser.get(id, { revs_info: true }, function(err, data) {
     if(err){
       callback(null,false)
@@ -83,6 +87,8 @@ module.exports.getUserById = function(id, callback){
   });
 }
 
+
+//Compare the username with its password and the entered password
 module.exports.comparePassword = function(candidatePassword, hash, callback){
 	bcrypt.compare(candidatePassword, hash, function(err, isMatch) {
     	if(err) throw err;
@@ -92,6 +98,7 @@ module.exports.comparePassword = function(candidatePassword, hash, callback){
 }
 
 
+//Get all the userinfo with just their ID
 module.exports.getUserInfoById = function(id, callback){
   searchuser.get(id, {include_docs:true}, function(err, data) {
     if(err){
@@ -105,6 +112,8 @@ module.exports.getUserInfoById = function(id, callback){
   });
 }
 
+
+//Update the entire user
 module.exports.updateUserInfo = function(user, callback){
   searchuser.get(user._id, { revs_info: true }, function(err, data) {
     if(err){
@@ -135,6 +144,7 @@ module.exports.updateUserInfo = function(user, callback){
 }
 
 
+///Update only the user rating
 module.exports.updateUserRating = function(id, rating, callback){
   searchuser.get(id, {include_docs:true}, function(err, data) {
     if(err){

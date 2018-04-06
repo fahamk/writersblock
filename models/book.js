@@ -7,6 +7,8 @@ var searchBook = cloudant.db.use('books')
 
 var Book = module.exports
 
+
+//Create the book entry in cloudant
 module.exports.createBook = function(newBook, callback){
   Cloudant({account:me, password:password}, function(er, cloudant) {
     if (er)
@@ -24,6 +26,7 @@ module.exports.createBook = function(newBook, callback){
   })
 }
 
+//Search the book by its name
 module.exports.getBookByBookname = function(bookname, callback){
   searchBook.search('book', 'newSearch', {q:'bookname:'+bookname}, function(er, result) {
      if (er) {
@@ -43,6 +46,8 @@ module.exports.getBookByBookname = function(bookname, callback){
    });
 }
 
+
+//Search book by ID
 module.exports.getBookById = function(id, callback){
   searchBook.get(id, { revs_info: true }, function(err, data) {
     if(err){
@@ -57,19 +62,22 @@ module.exports.getBookById = function(id, callback){
 
 }
 
+
+//Get fll info of the book using ID
 module.exports.getBookInfoById = function(id, callback){
   searchBook.get(id, {include_docs:true}, function(err, data) {
     if(err){
       callback(null,false)
     }
     else{
-      //console.log("We successfully searched and here is the id: "+data._id);
-      //console.log(`Document contents:` + JSON.stringify(data));
+
       callback(null, data)
     }
   });
 }
 
+
+//Delete the book with its ID
 module.exports.deleteBookByID = function(id, callback){
   searchBook.get(id, { revs_info: true }, function(err, data) {
     if(err){
@@ -89,6 +97,8 @@ module.exports.deleteBookByID = function(id, callback){
   });
 }
 
+
+//Get id of the author
 module.exports.getBookAuthorID = function(id, callback){
   searchBook.get(id, {include_docs:true}, function(err, data) {
     if(err){
@@ -102,6 +112,8 @@ module.exports.getBookAuthorID = function(id, callback){
   });
 }
 
+
+//Browse page and profile pages use this to get all the books
 module.exports.getBooks = function(id, callback){
   searchBook.list({include_docs:true},function (err, data) {
     if(err){
@@ -169,6 +181,7 @@ module.exports.getBooks = function(id, callback){
 
 
 
+//Increase view count of book
 module.exports.addViewToBook = function(id, callback){
   searchBook.get(id, {include_docs:true}, function(err, data) {
     if(err){
@@ -201,6 +214,8 @@ module.exports.addViewToBook = function(id, callback){
   });
 }
 
+
+//Update rating of book and author
 module.exports.addRatingToBook = function(id, rating, callback){
   searchBook.get(id, {include_docs:true}, function(err, data) {
     if(err){

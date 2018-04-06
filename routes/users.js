@@ -46,6 +46,7 @@ router.post('/register', function(req, res){
 		)
 	}
 	else{
+		//Using user info to create entry in cloudant db
 		var Cloudant = require('@cloudant/cloudant');
 		var me = '1f4f3453-d758-4393-a422-2010efd3d530-bluemix'; // Set this to your own account
 		var cpassword = '28a1e839547250fe22c3e85e46c9f6200a26428ccd6fa95ade3778162b939779';
@@ -67,6 +68,7 @@ router.post('/register', function(req, res){
 		  }
 			console.log("Now creating the user")
 
+		// Using user Module function to create new user.
 		 User.createUser(newUser, function(err, user){
 			 if(err) throw err;
 			 console.log("ESKITTIT"+newUser);
@@ -78,19 +80,18 @@ router.post('/register', function(req, res){
 
 });
 
-//User.getUserByUsername("asd", function(err, user){
-//	if(err) throw err
-//	console.log("And the user is: "+JSON.stringify(user))
-//})
 
+//Passport to create a session
 passport.use(new LocalStrategy(
   function(username, password, done) {
+		//Get the username
    User.getUserByUsername(username, function(err, user){
    	if(err) throw err;
    	if(!user){
    		return done(null, false, {message: 'Unknown User'});
    	}
 
+		//Compare passwords to see if the user is actually who they say they are. Basic Authentication
    	User.comparePassword(password, user.password, function(err, isMatch){
    		if(err) throw err;
    		if(isMatch){
@@ -115,6 +116,7 @@ passport.deserializeUser(function(id, done) {
   });
 });
 
+//When user clicks login, we want to route them to the homepage.
 router.post('/login',
   passport.authenticate('local', {successRedirect:'/', failureRedirect:'/users/login',failureFlash: true}),
   function(req, res) {
@@ -123,6 +125,7 @@ router.post('/login',
     res.redirect('/');
   });
 
+//If user wants to logout.
 router.get('/logout', function(req, res){
 	req.logout();
 
