@@ -143,6 +143,16 @@ module.exports.getBooks = function(id, callback){
         else if(genre == "Fantasy"){
           imageURL = "https://i.kinja-img.com/gawker-media/image/upload/s--O4IwPdf1--/c_scale,fl_progressive,q_80,w_800/l5luskqeprim7l1llid2.jpg"
         }
+        else if(genre == "Self help"){
+          imageURL = "https://previews.123rf.com/images/dizanna/dizanna1506/dizanna150601456/41206493-self-help-word-cloud-health-concept.jpg"
+        }
+        else if(genre == "Health"){
+          imageURL = "http://cdn.bukisa.com/wp-content/uploads/2017/09/F.jpg"
+        }
+
+        else if(genre == "Guide"){
+          imageURL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQGw5KMixExAo1YrdsfPWyHcdP0NW1RPKO0bn6Drz_sWL7nNYTA"
+        }
 
         console.log("The image url is: "+imageURL);
         var percent = data.rows[i].doc.rating * 20

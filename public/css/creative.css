@@ -611,6 +611,7 @@ input[type=text], input[type=password] {
     margin: 5px 0 22px 0;
     display: inline-block;
     border: none;
+    color: red;
     background: #f1f1f1;
 }
 

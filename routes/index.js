@@ -57,11 +57,6 @@ const multer = Multer({
 });
 
 
-
-
-
-
-
 // Get Homepage
 router.get('/', function(req, res){
 	console.log("The username here is "+req.user)
@@ -242,10 +237,10 @@ router.get('/browse', function(req, res){
 
      if(req.isAuthenticated()){
        console.log("We are authenticated")
-       res.render('browse',{ bookArray : books, userID: true })
+       res.render('browse',{ bookArray : books, userID: true, booksExist: true })
      }
      else{
-       res.render('browse',{ bookArray : books, userID: false })
+       res.render('browse',{ bookArray : books, userID: false, booksExist: true })
      }
 	 })
   //res.render('browse')
@@ -315,15 +310,28 @@ router.post('/browse', function(req, res){
        }
 
      }
-
-
-     if(req.isAuthenticated()){
-       console.log("We are authenticated")
-       res.render('browse',{ bookArray : books, userID: true })
+     var exist = false
+     console.log("The array lenght is "+books.length)
+     if(books.length>0){
+       if(req.isAuthenticated()){
+         console.log("We are authenticated")
+         res.render('browse',{ bookArray : books, userID: true , booksExist: true})
+       }
+       else{
+         res.render('browse',{ bookArray : books, userID: false, booksExist: true})
+       }
      }
      else{
-       res.render('browse',{ bookArray : books, userID: false })
+       if(req.isAuthenticated()){
+         console.log("We are authenticated")
+         res.render('browse',{ bookArray : books, userID: true , booksExist: false})
+       }
+       else{
+         res.render('browse',{ bookArray : books, userID: false, booksExist: false})
+       }
      }
+
+
 	 })
   //res.render('browse')
 });

@@ -41,7 +41,6 @@ router.post('/register', function(req, res){
 	var upassword = req.body.password;
 	var upassword2 = req.body.password2;
 	if(upassword != upassword2){
-		console.log("not sure wtf this is")
 		res.render('register',
 		{ pNotMatch : true }
 		)

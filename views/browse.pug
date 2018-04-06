@@ -122,33 +122,36 @@ html(lang='en')
     //section#contact  
     .container
       .row
-        each book in bookArray
-          .col-lg-3.col-sm-6
-            .card.hovercard(style="overflow: scroll; height:350px;")
-              .cardheader(style="background: url("+book.imageURL+"); background-size: 300px;")
-              .avatar
-                // img(alt='', src='/public/images/newapp-icon.png')
-                br
-                br
-                br
-              .info
-                .title
-                  a(href='/read/'+book.id style="word-wrap: break-word") #{book.title}
-                .desc 
-                  a(href='/userprofile/'+book.authorID) #{book.authorUsername}
-                .desc Genre: #{book.genre}
-                if book.rating == 0
-                  .desc Rating: No Rating Yet
-                else
-                  .star-ratings-sprite
-                    span.star-ratings-sprite-rating(style='width:'+book.percent+'%')
-                  .desc Rating: #{book.rating}/5 (#{book.numberOfRatings})
-              .bottom
-                a.btn.btn-primary.btn-twitter.btn-sm(href='/userprofile/'+book.authorID)
-                  i.fa.fa-address-book 
-                a.btn.btn-danger.btn-sm(rel='publisher', href='#')
-                  i.fa.fa-eye  #{book.views}
-          
+        if booksExist == true
+          each book in bookArray
+            .col-lg-3.col-sm-6
+              .card.hovercard(style="overflow: scroll; height:350px;")
+                .cardheader(style="background: url("+book.imageURL+"); background-size: 300px;")
+                .avatar
+                  // img(alt='', src='/public/images/newapp-icon.png')
+                  br
+                  br
+                  br
+                .info
+                  .title
+                    a(href='/read/'+book.id style="word-wrap: break-word") #{book.title}
+                  .desc 
+                    a(href='/userprofile/'+book.authorID) #{book.authorUsername}
+                  .desc Genre: #{book.genre}
+                  if book.rating == 0
+                    .desc Rating: No Rating Yet
+                  else
+                    .star-ratings-sprite
+                      span.star-ratings-sprite-rating(style='width:'+book.percent+'%')
+                    .desc Rating: #{book.rating}/5 (#{book.numberOfRatings})
+                .bottom
+                  a.btn.btn-primary.btn-twitter.btn-sm(href='/userprofile/'+book.authorID)
+                    i.fa.fa-address-book 
+                  a.btn.btn-danger.btn-sm(rel='publisher', href='#')
+                    i.fa.fa-eye  #{book.views}
+        else
+          center
+            h1 No Books That Match Your Search!
     aside.bg-dark
       .container.text-center
         .call-to-action
