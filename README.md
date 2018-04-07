@@ -1,6 +1,6 @@
-# Node.js Hello World Sample
+# Writers Block Application
 
-This application demonstrates a simple, reusable Node.js web application based on the Express framework.
+This is the application to run the writersblock code on nodejs
 
 ## Run the app locally
 
@@ -11,3 +11,6 @@ This application demonstrates a simple, reusable Node.js web application based o
 1. Access the running app in a browser at <http://localhost:6001>
 
 [Install Node.js]: https://nodejs.org/en/download/
+
+
+## The majority of the code is in the views folder and the models folder. 
