@@ -1,6 +1,8 @@
 # Writers Block Application
 
-This is the application to run the writersblock code on nodejs
+This is the application to run the writersblock code on nodejs. 
+
+This application is a youtube for books where authors can post their own books/writings onto their channel and users can then rate follow search etc 
 
 ## Run the app locally
 
