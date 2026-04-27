@@ -16,3 +16,5 @@ This application is a youtube for books where authors can post their own books/w
 
 
 ## The majority of the code is in the views folder and the models folder. 
+
+<!-- pipeline-smoketest 2026-04-27 -->
